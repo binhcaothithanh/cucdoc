@@ -1,0 +1,2 @@
+<?php
+$_attrs = array();
