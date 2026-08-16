@@ -20,7 +20,6 @@ export default function LanguageSelectionScreen() {
         </View>
         <Text style={styles.title}>{t('language.title')}</Text>
         <Text style={styles.subtitle}>{t('language.subtitle')}</Text>
-
         <TouchableOpacity
           onPress={() => chooseLanguage('en')}
           style={styles.languageButton}

@@ -4,7 +4,8 @@ import { getToken } from './asyncStorageHelpers';
 import Constants from 'expo-constants';
 let store;
 
-const BASE_URL = Constants.expoConfig?.extra?.API_URL || process.env.API_URL;
+// const BASE_URL = Constants.expoConfig?.extra?.API_URL || process.env.API_URL;
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL || process.env.EXPO_PUBLIC_HOST;
 export const injectStore = (_store) => {
     store = _store;
 }
@@ -35,6 +36,17 @@ authInstance.interceptors.request.use(
 
         console.log('Starting Request with Token attached');
         console.log(config);
+        return config;
+    },
+    (error) => Promise.reject(error)
+);
+
+
+instance.interceptors.request.use(
+    (config) => {
+        // axios.getUri resolves baseURL + url + params automatically
+        const fullUrl = axios.getUri(config);
+        console.log(`[API Request] -> ${config.method?.toUpperCase()} ${fullUrl}`);
         return config;
     },
     (error) => Promise.reject(error)

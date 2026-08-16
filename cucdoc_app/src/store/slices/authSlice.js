@@ -1,23 +1,20 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { instance } from '../../utils/api';
 import { saveToken, removeToken } from '../../utils/asyncStorageHelpers';
-import Constants from 'expo-constants';
 
-const BASE_URL = Constants.expoConfig?.extra?.API_URL || process.env.API_URL || process.env.EXPO_PUBLIC_HOST;
-
-// Thunk Đăng ký
+// Thunk Đăng ký (Dùng instance từ api.js, vì interceptors đã tự động trả về response.data)
 export const registerUser = createAsyncThunk(
     'auth/registerUser',
     async (userData, { rejectWithValue }) => {
         try {
-            const response = await axios.post(`${BASE_URL}/api/auth/register`, userData);
-            if (response.data.status) {
-                return response.data;
+            const response = await instance.post('/api/auth/register', userData);
+            if (response.status) {
+                return response;
             } else {
-                return rejectWithValue(response.data.message);
+                return rejectWithValue(response.message);
             }
         } catch (error) {
-            return rejectWithValue(error.response?.data?.message || 'Lỗi kết nối server');
+            return rejectWithValue(error.response?.data?.message || error.message || 'Lỗi kết nối server');
         }
     }
 );
@@ -27,17 +24,17 @@ export const loginUser = createAsyncThunk(
     'auth/loginUser',
     async (credentials, { rejectWithValue }) => {
         try {
-            const response = await axios.post(`${BASE_URL}/api/auth/login`, credentials);
-            if (response.data.status) {
-                const { access_token } = response.data.data;
+            const response = await instance.post('/api/auth/login', credentials);
+            if (response.status) {
+                const { access_token } = response.data;
                 // Lưu token vào AsyncStorage
                 await saveToken(access_token);
-                return response.data.data; // Trả về thông tin user & token
+                return response.data; // Trả về thông tin user & token
             } else {
-                return rejectWithValue(response.data.message);
+                return rejectWithValue(response.message);
             }
         } catch (error) {
-            return rejectWithValue(error.response?.data?.message || 'Lỗi kết nối server');
+            return rejectWithValue(error.response?.data?.message || error.message || 'Lỗi kết nối server');
         }
     }
 );
