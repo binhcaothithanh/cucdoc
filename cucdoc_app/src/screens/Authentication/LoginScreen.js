@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, Alert, TouchableOpacity } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginUser } from '../../store/slices/authSlice';
 import CustomInput from '../../components/common/CustomInput';
 import CustomButton from '../../components/common/CustomButton';
+import { authStyles } from './authStyles';
 
 export default function LoginScreen({ navigation }) {
     const dispatch = useDispatch();
@@ -19,18 +20,16 @@ export default function LoginScreen({ navigation }) {
         }
 
         const resultAction = await dispatch(loginUser({ phone, password }));
-        // console.log('Login resultAction:', resultAction); // Debugging line 
-        if (loginUser.fulfilled.match(resultAction)) {
-            // Đăng nhập thành công, Redux state 'token' có giá trị, 
-            // Navigation container sẽ tự động chuyển sang luồng Home Screen.
-        } else {
+
+        if (!loginUser.fulfilled.match(resultAction)) {
             Alert.alert('Đăng nhập thất bại', resultAction.payload || 'Sai thông tin đăng nhập.');
         }
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.headerTitle}>Đăng Nhập Hệ Thống</Text>
+        <View style={authStyles.container}>
+            <Text style={authStyles.headerTitle}>Đăng Nhập</Text>
+            <Text style={authStyles.subtitle}>Chào mừng bạn quay trở lại hệ thống</Text>
 
             <CustomInput
                 label="Số điện thoại"
@@ -50,36 +49,11 @@ export default function LoginScreen({ navigation }) {
 
             <CustomButton title="Đăng Nhập" onPress={handleLogin} isLoading={isLoading} />
 
-            <TouchableOpacity style={styles.switchLink} onPress={() => navigation.navigate('Register')}>
-                <Text style={styles.switchText}>Chưa có tài khoản? <Text style={styles.linkBold}>Đăng ký ngay</Text></Text>
+            <TouchableOpacity style={authStyles.switchLink} onPress={() => navigation.navigate('Register')}>
+                <Text style={authStyles.switchText}>
+                    Chưa có tài khoản? <Text style={authStyles.linkBold}>Đăng ký ngay</Text>
+                </Text>
             </TouchableOpacity>
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 20,
-        justifyContent: 'center',
-        backgroundColor: '#f9f9f9',
-    },
-    headerTitle: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 24,
-        textAlign: 'center',
-        color: '#222',
-    },
-    switchLink: {
-        marginTop: 15,
-        alignItems: 'center',
-    },
-    switchText: {
-        color: '#666',
-    },
-    linkBold: {
-        color: '#007AFF',
-        fontWeight: 'bold',
-    }
-});
