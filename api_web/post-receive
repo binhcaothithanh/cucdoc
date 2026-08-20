@@ -1,0 +1,4 @@
+#!/bin/sh
+#
+echo "send from server thang pq"
+GIT_WORK_TREE=/var/sentora/hostdata/carulli/public_html/bungbang.git git checkout -f
